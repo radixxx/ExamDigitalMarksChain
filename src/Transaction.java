@@ -22,7 +22,7 @@ public class Transaction {
         this.value = value;
         this.inputs = inputs;
     }
-    
+
     public boolean processTransaction() {
 
         if(verifySignature() == false) {
@@ -43,5 +43,33 @@ public class Transaction {
         }
 
 
+        //Generate transaction outputs:
+        float leftOver = getInputsValue() - value; //get value of inputs then the left over change:
+        transactionId = calulateHash();
+        outputs.add(new TransactionOutput( this.reciepient, value,transactionId)); //send value to recipient
+        outputs.add(new TransactionOutput( this.sender, leftOver,transactionId)); //send the left over 'change' back to sender
+
+        //Add outputs to Unspent list
+        for(TransactionOutput o : outputs) {
+            NoobChain.UTXOs.put(o.id , o);
+        }
+
+        //Remove transaction inputs from UTXO lists as spent:
+        for(TransactionInput i : inputs) {
+            if(i.UTXO == null) continue; //if Transaction can't be found skip it
+            NoobChain.UTXOs.remove(i.UTXO.id);
+        }
+
+        return true;
+    }
+
+    public float getInputsValue() {
+        float total = 0;
+        for(TransactionInput i : inputs) {
+            if(i.UTXO == null) continue; //if Transaction can't be found skip it, This behavior may not be optimal.
+            total += i.UTXO.value;
+        }
+        return total;
+    }
 
 }
