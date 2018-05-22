@@ -1,63 +1,99 @@
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Scanner;
 
 public class Main {
 
     public static ArrayList<Block> blockchain = new ArrayList<Block>();
     public static HashMap<String,TransactionOutput> UTXOs = new HashMap<String,TransactionOutput>();
-
     public static int difficulty = 3;
     public static float minimumTransaction = 0.1f;
-    public static WalletDiary walletA;
-    public static WalletDiary walletB;
+    public static WalletDiary walletDiaryA;//wallet diary
+    public static WalletDiary walletDiaryB;
+    public static WalletDiary walletDiaryC;
+    public static WalletDiary walletDiaryD;
+    public static WalletDiary walletDiaryJ;
+
     public static Transaction genesisTransaction;
 
-    public static void main (String [] Args){
-
+    public static void main(String[] args) {
         //add our blocks to the blockchain ArrayList:
-        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
+        //Setup Bouncey castle as a Security Provider
+        //Logger.Set(LOggerr.creteGuiLogger());
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
         //Create wallets:
-        walletA = new WalletDiary();
-        walletB = new WalletDiary();
+        walletDiaryA = new WalletDiary();
+        walletDiaryB = new WalletDiary();
+        walletDiaryC = new WalletDiary();
+        walletDiaryD = new WalletDiary();
+        walletDiaryJ = new WalletDiary();
         WalletDiary coinbase = new WalletDiary();
 
-        //
-        genesisTransaction = new Transaction(coinbase.publicKey, walletA.publicKey, 100f, null);
+
+        //create genesis transaction, which sends X Coin's to walletDiaryA:
+        System.out.println("Enter value: ");
+        Scanner in = new Scanner(System.in);
+        float value = in.nextFloat();
+
+        genesisTransaction = new Transaction(coinbase.publicKey, walletDiaryA.publicKey, value, null);
         genesisTransaction.generateSignature(coinbase.privateKey);	 //manually sign the genesis transaction
         genesisTransaction.transactionId = "0"; //manually set the transaction id
-        genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.reciepient, genesisTransaction.value, genesisTransaction.transactionId)); //manually add the Transactions Output
+        //manually add the Transactions Output
+        genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.reciepient, genesisTransaction.value, genesisTransaction.transactionId));
         UTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0)); //its important to store our first transaction in the UTXOs list.
 
-        System.out.println("Creating and Mining Genesis block... ");
+        System.out.println("Creating and Mining Genesis block...+ ");
         Block genesis = new Block("0");
         genesis.addTransaction(genesisTransaction);
         addBlock(genesis);
 
-
         //testing
         Block block1 = new Block(genesis.hash);
-        System.out.println("\nWalletA's balance is: " + walletA.getBalance());
-        System.out.println("\nWalletA is Attempting to send funds (40) to WalletB...");
-        block1.addTransaction(walletA.sendFunds(walletB.publicKey, 40f));
+        System.out.println("\nWalletA's balance is: " + walletDiaryA.getBalance());
+        System.out.println("\nWalletA is Attempting to send funds " + value + " to WalletB...");//(40)
+        block1.addTransaction(walletDiaryA.sendFunds(walletDiaryB.publicKey, value));//40f
         addBlock(block1);
-        System.out.println("\nWalletA's balance is: " + walletA.getBalance());
-        System.out.println("WalletB's balance is: " + walletB.getBalance());
+        System.out.println("\nWalletA's balance is: " + walletDiaryA.getBalance());
+        System.out.println("WalletB's balance is: " + walletDiaryB.getBalance());
 
         Block block2 = new Block(block1.hash);
-        System.out.println("\nWalletA Attempting to send more funds (1000) than it has...");
-        block2.addTransaction(walletA.sendFunds(walletB.publicKey, 1000f));
+        //change value of 1000f to 10f
+        System.out.println("\nWalletA Attempting to send more funds (10) than it has...");
+        block2.addTransaction(walletDiaryA.sendFunds(walletDiaryB.publicKey, 10f));
         addBlock(block2);
-        System.out.println("\nWalletA's balance is: " + walletA.getBalance());
-        System.out.println("WalletB's balance is: " + walletB.getBalance());
+        System.out.println("\nWalletA's balance is: " + walletDiaryA.getBalance());
+        System.out.println("WalletB's balance is: " + walletDiaryB.getBalance());
 
         Block block3 = new Block(block2.hash);
         System.out.println("\nWalletB is Attempting to send funds (20) to WalletA...");
-        block3.addTransaction(walletB.sendFunds( walletA.publicKey, 20));
-        System.out.println("\nWalletA's balance is: " + walletA.getBalance());
-        System.out.println("WalletB's balance is: " + walletB.getBalance());
+        block3.addTransaction(walletDiaryB.sendFunds( walletDiaryA.publicKey, 20));
+        //addBlock(block2);
+        addBlock(block3);
+        System.out.println("\nWalletA's balance is: " + walletDiaryA.getBalance());
+        System.out.println("WalletB's balance is: " + walletDiaryB.getBalance());
+
+        //added my new custom new block
+        Block block4 = new Block(block3.hash);
+        System.out.println("\nWalletB is Attempting to send funds (10) to WalletC...");
+        block4.addTransaction(walletDiaryB.sendFunds( walletDiaryC.publicKey, 10));
+        //addBlock(block4);
+        addBlock(block4);
+        System.out.println("\nWalletB's balance is: " + walletDiaryB.getBalance());
+        System.out.println("\nWalletC's balance is: " + walletDiaryC.getBalance());
+
+
+        //added my new custom new block
+        Block block5 = new Block(block4.hash);
+        System.out.println("\nWalletB is Attempting to send funds (10) to WalletJ...");
+        block4.addTransaction(walletDiaryB.sendFunds( walletDiaryJ.publicKey, 10));
+        //addBlock(block4);
+        addBlock(block5);
+        System.out.println("\nWalletB's balance is: " + walletDiaryB.getBalance());
+        System.out.println("\nWalletJ's balance is: " + walletDiaryJ.getBalance());
+
+
 
         isChainValid();
 
