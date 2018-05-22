@@ -52,7 +52,9 @@ public class Block {
             }
         }
 
-        
-
+        transactions.add(transaction);
+        System.out.println("Transaction Successfully added to Block");
+        return true;
+    }
 
 }
