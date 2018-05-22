@@ -22,6 +22,25 @@ public class Transaction {
         this.value = value;
         this.inputs = inputs;
     }
+    
+    public boolean processTransaction() {
+
+        if(verifySignature() == false) {
+            System.out.println("#Transaction Signature failed to verify");
+            return false;
+        }
+
+        //Gathers transaction inputs (Making sure they are unspent):
+        for(TransactionInput i : inputs) {
+            i.UTXO = NoobChain.UTXOs.get(i.transactionOutputId);
+        }
+
+        //Checks if transaction is valid:
+        if(getInputsValue() < NoobChain.minimumTransaction) {
+            System.out.println("Transaction Inputs too small: " + getInputsValue());
+            System.out.println("Please enter the amount greater than " + NoobChain.minimumTransaction);
+            return false;
+        }
 
 
 
