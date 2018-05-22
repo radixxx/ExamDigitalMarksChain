@@ -9,7 +9,7 @@ public class Main {
     public static HashMap<String,TransactionOutput> UTXOs = new HashMap<String,TransactionOutput>();
     public static int difficulty = 3;
     public static float minimumTransaction = 0.1f;
-    public static WalletDiary walletDiaryA;//wallet diary
+    public static WalletDiary walletDiaryTeacher;//wallet diary
     public static WalletDiary walletDiaryB;
     public static WalletDiary walletDiaryC;
     public static WalletDiary walletDiaryD;
@@ -23,8 +23,8 @@ public class Main {
         //Logger.Set(LOggerr.creteGuiLogger());
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
-        //Create wallets:
-        walletDiaryA = new WalletDiary();
+        //Create walletsDiary's:
+        walletDiaryTeacher = new WalletDiary();
         walletDiaryB = new WalletDiary();
         walletDiaryC = new WalletDiary();
         walletDiaryD = new WalletDiary();
@@ -32,12 +32,12 @@ public class Main {
         WalletDiary coinbase = new WalletDiary();
 
 
-        //create genesis transaction, which sends X Coin's to walletDiaryA:
+        //create genesis transaction, which sends X Coin's to walletDiaryTeacher:
         System.out.println("Enter value: ");
         Scanner in = new Scanner(System.in);
         float value = in.nextFloat();
 
-        genesisTransaction = new Transaction(coinbase.publicKey, walletDiaryA.publicKey, value, null);
+        genesisTransaction = new Transaction(coinbase.publicKey, walletDiaryTeacher.publicKey, value, null);
         genesisTransaction.generateSignature(coinbase.privateKey);	 //manually sign the genesis transaction
         genesisTransaction.transactionId = "0"; //manually set the transaction id
         //manually add the Transactions Output
@@ -51,34 +51,33 @@ public class Main {
 
         //testing
         Block block1 = new Block(genesis.hash);
-        System.out.println("\nWalletA's balance is: " + walletDiaryA.getBalance());
-        System.out.println("\nWalletA is Attempting to send funds " + value + " to WalletB...");//(40)
-        block1.addTransaction(walletDiaryA.sendFunds(walletDiaryB.publicKey, value));//40f
+        System.out.println("\nwalletDiaryTeacher's balance is: " + walletDiaryTeacher.getBalance());
+        System.out.println("\nwalletDiaryTeacher is Attempting to send funds to WalletB...");//value
+        block1.addTransaction(walletDiaryTeacher.sendFunds(walletDiaryB.publicKey, 10));
         addBlock(block1);
-        System.out.println("\nWalletA's balance is: " + walletDiaryA.getBalance());
+        System.out.println("\nwalletDiaryTeacher's balance is: " + walletDiaryTeacher.getBalance());
         System.out.println("WalletB's balance is: " + walletDiaryB.getBalance());
 
         Block block2 = new Block(block1.hash);
         //change value of 1000f to 10f
-        System.out.println("\nWalletA Attempting to send more funds (10) than it has...");
-        block2.addTransaction(walletDiaryA.sendFunds(walletDiaryB.publicKey, 10f));
+        System.out.println("\nwalletDiaryTeacher Attempting to send more funds (10) than it has...");
+        block2.addTransaction(walletDiaryTeacher.sendFunds(walletDiaryB.publicKey, 10f));
         addBlock(block2);
-        System.out.println("\nWalletA's balance is: " + walletDiaryA.getBalance());
+        System.out.println("\nwalletDiaryTeacher's balance is: " + walletDiaryTeacher.getBalance());
         System.out.println("WalletB's balance is: " + walletDiaryB.getBalance());
 
         Block block3 = new Block(block2.hash);
         System.out.println("\nWalletB is Attempting to send funds (20) to WalletA...");
-        block3.addTransaction(walletDiaryB.sendFunds( walletDiaryA.publicKey, 20));
+        block3.addTransaction(walletDiaryB.sendFunds( walletDiaryTeacher.publicKey, 8));//20
         //addBlock(block2);
         addBlock(block3);
-        System.out.println("\nWalletA's balance is: " + walletDiaryA.getBalance());
+        System.out.println("\nwalletDiaryTeacher's balance is: " + walletDiaryTeacher.getBalance());
         System.out.println("WalletB's balance is: " + walletDiaryB.getBalance());
 
         //added my new custom new block
         Block block4 = new Block(block3.hash);
         System.out.println("\nWalletB is Attempting to send funds (10) to WalletC...");
         block4.addTransaction(walletDiaryB.sendFunds( walletDiaryC.publicKey, 10));
-        //addBlock(block4);
         addBlock(block4);
         System.out.println("\nWalletB's balance is: " + walletDiaryB.getBalance());
         System.out.println("\nWalletC's balance is: " + walletDiaryC.getBalance());
@@ -87,7 +86,7 @@ public class Main {
         //added my new custom new block
         Block block5 = new Block(block4.hash);
         System.out.println("\nWalletB is Attempting to send funds (10) to WalletJ...");
-        block4.addTransaction(walletDiaryB.sendFunds( walletDiaryJ.publicKey, 10));
+        block4.addTransaction(walletDiaryB.sendFunds( walletDiaryJ.publicKey, 9));//10
         //addBlock(block4);
         addBlock(block5);
         System.out.println("\nWalletB's balance is: " + walletDiaryB.getBalance());
