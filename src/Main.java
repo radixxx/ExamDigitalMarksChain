@@ -10,8 +10,8 @@ public class Main {
 
     public static int difficulty = 3;
     public static float minimumTransaction = 0.1f;
-    public static Wallet walletA;
-    public static Wallet walletB;
+    public static WalletDiary walletA;
+    public static WalletDiary walletB;
     public static Transaction genesisTransaction;
 
     public static void main (String [] Args){
@@ -20,9 +20,9 @@ public class Main {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
 
         //Create wallets:
-        walletA = new Wallet();
-        walletB = new Wallet();
-        Wallet coinbase = new Wallet();
+        walletA = new WalletDiary();
+        walletB = new WalletDiary();
+        WalletDiary coinbase = new WalletDiary();
 
         //
         genesisTransaction = new Transaction(coinbase.publicKey, walletA.publicKey, 100f, null);
@@ -90,6 +90,61 @@ public class Main {
                 System.out.println("#This block hasn't been mined");
                 return false;
             }
+
+            //loop thru blockchains transactions:
+            TransactionOutput tempOutput;
+            for(int t=0; t <currentBlock.transactions.size(); t++) {
+                Transaction currentTransaction = currentBlock.transactions.get(t);
+
+                if(!currentTransaction.verifySignature()) {
+                    System.out.println("#Signature on Transaction(" + t + ") is Invalid");
+                    return false;
+                }
+                if(currentTransaction.getInputsValue() != currentTransaction.getOutputsValue()) {
+                    System.out.println("#Inputs are note equal to outputs on Transaction(" + t + ")");
+                    return false;
+                }
+
+                for(TransactionInput input: currentTransaction.inputs) {
+                    tempOutput = tempUTXOs.get(input.transactionOutputId);
+
+                    if(tempOutput == null) {
+                        System.out.println("#Referenced input on Transaction(" + t + ") is Missing");
+                        return false;
+                    }
+
+                    if(input.UTXO.value != tempOutput.value) {
+                        System.out.println("#Referenced input Transaction(" + t + ") value is Invalid");
+                        return false;
+                    }
+
+                    tempUTXOs.remove(input.transactionOutputId);
+                }
+
+                for(TransactionOutput output: currentTransaction.outputs) {
+                    tempUTXOs.put(output.id, output);
+                }
+
+                if( currentTransaction.outputs.get(0).reciepient != currentTransaction.reciepient) {
+                    System.out.println("#Transaction(" + t + ") output reciepient is not who it should be");
+                    return false;
+                }
+                if( currentTransaction.outputs.get(1).reciepient != currentTransaction.sender) {
+                    System.out.println("#Transaction(" + t + ") output 'change' is not sender.");
+                    return false;
+                }
+
+            }
+
+        }
+        System.out.println("Blockchain is valid");
+        return true;
+    }
+
+    public static void addBlock(Block newBlock) {
+        newBlock.mineBlock(difficulty);
+        blockchain.add(newBlock);
+    }
 
 }
 
