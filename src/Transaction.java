@@ -89,7 +89,7 @@ public class Transaction {
         }
         return total;
     }
-    
+
     private String calulateHash() {
         sequence++; //increase the sequence to avoid 2 identical transactions having the same hash
         return StringUtil.applySha256(
