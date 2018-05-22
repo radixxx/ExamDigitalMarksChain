@@ -62,7 +62,7 @@ public class StringUtil {
         return new GsonBuilder().setPrettyPrinting().create().toJson(o);
     }
 
-    //Returns difficulty string target, to compare to hash. eg difficulty of 5 will return "00000"  
+    //Returns difficulty string target, to compare to hash. eg difficulty of 5 will return "00000"
     public static String getDificultyString(int difficulty) {
         return new String(new char[difficulty]).replace('\0', '0');
     }
