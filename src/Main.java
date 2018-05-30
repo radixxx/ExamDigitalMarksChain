@@ -59,7 +59,6 @@ public class Main {
         System.out.println("WalletB's balance is: " + walletDiaryB.getBalance());
 
         Block block2 = new Block(block1.hash);
-        //change value of 1000f to 10f
         System.out.println("\nwalletDiaryTeacher Attempting to send more funds (10) than it has...");
         block2.addTransaction(walletDiaryTeacher.sendFunds(walletDiaryB.publicKey, 10f));
         addBlock(block2);
@@ -67,29 +66,28 @@ public class Main {
         System.out.println("WalletB's balance is: " + walletDiaryB.getBalance());
 
         Block block3 = new Block(block2.hash);
-        System.out.println("\nWalletB is Attempting to send funds (20) to WalletA...");
-        block3.addTransaction(walletDiaryB.sendFunds( walletDiaryTeacher.publicKey, 8));//20
-        //addBlock(block2);
+        System.out.println("\nWalletB is Attempting to send funds" +"value" +" to WalletB...");
+        block3.addTransaction(walletDiaryTeacher.sendFunds( walletDiaryB.publicKey, 8));//20
         addBlock(block3);
         System.out.println("\nwalletDiaryTeacher's balance is: " + walletDiaryTeacher.getBalance());
         System.out.println("WalletB's balance is: " + walletDiaryB.getBalance());
 
         //added my new custom new block
         Block block4 = new Block(block3.hash);
-        System.out.println("\nWalletB is Attempting to send funds (10) to WalletC...");
-        block4.addTransaction(walletDiaryB.sendFunds( walletDiaryC.publicKey, 10));
+        System.out.println("\nwalletDiaryTeacher's is Attempting to send funds (10) to WalletC...");
+        block4.addTransaction(walletDiaryTeacher.sendFunds( walletDiaryC.publicKey, 10));
         addBlock(block4);
-        System.out.println("\nWalletB's balance is: " + walletDiaryB.getBalance());
+        System.out.println("\nwalletDiaryTeacher's balance is: " + walletDiaryTeacher.getBalance());
         System.out.println("\nWalletC's balance is: " + walletDiaryC.getBalance());
 
 
         //added my new custom new block
         Block block5 = new Block(block4.hash);
-        System.out.println("\nWalletB is Attempting to send funds (10) to WalletJ...");
-        block4.addTransaction(walletDiaryB.sendFunds( walletDiaryJ.publicKey, 9));//10
+        System.out.println("\nwalletDiaryTeacher is Attempting to send funds (10) to WalletJ...");
+        block4.addTransaction(walletDiaryTeacher.sendFunds( walletDiaryJ.publicKey, 9));//10
         //addBlock(block4);
         addBlock(block5);
-        System.out.println("\nWalletB's balance is: " + walletDiaryB.getBalance());
+        System.out.println("\nwalletDiaryTeacher's balance is: " + walletDiaryTeacher.getBalance());
         System.out.println("\nWalletJ's balance is: " + walletDiaryJ.getBalance());
 
 
@@ -172,7 +170,7 @@ public class Main {
             }
 
         }
-        System.out.println("Blockchain is valid");
+        System.out.println("\tBlockchain is valid");
         return true;
     }
 
